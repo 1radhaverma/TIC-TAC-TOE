@@ -296,25 +296,6 @@ that's a win. One small piece of logic, reused 8 times.
   there is nowhere for client and server state to drift apart because the
   client never computes any of it.
 
-### SOLID & OOP, Concretely
-
-Rather than list the principles abstractly, here is where each one actually
-shows up in this codebase (see also the inline comments in the referenced
-files — the aim throughout was to explain the reasoning at the point it
-applies, not just here):
-
-| Principle | Where |
-|---|---|
-| **Single Responsibility** | `Board` only stores/queries cells. `WinChecker` only knows the 8 winning lines. `Scoreboard` only tallies results. `GameMapper` is the only place domain↔DTO conversion happens. `ExceptionHandlingMiddleware` is the only place exceptions become HTTP status codes. |
-| **Open/Closed** | `IWinChecker` and `IComputerPlayerStrategy` let the win rule or the computer's intelligence be replaced (e.g. a Minimax strategy) by adding a new class and changing one DI registration — no existing class needs editing. |
-| **Liskov Substitution** | Any `IGameRepository`/`IScoreboardRepository`/`IWinChecker`/`IComputerPlayerStrategy` implementation is fully interchangeable — `GameService` and `Game` only ever call the interface's contract, which the tests prove by substituting hand-written fakes for the real in-memory repositories. |
-| **Interface Segregation** | `IGameService` and `IScoreboardService` are separate interfaces (and separate controllers) even though one backing store could theoretically serve both — `ScoreboardController` has no reason to see game-management methods, or vice versa. |
-| **Dependency Inversion** | `GameService`, `Game`, and `BasicComputerStrategy` all depend only on interfaces passed into their constructors/methods, never on `new SomeConcreteClass()`. `Program.cs` is the single composition root where concrete types (`InMemoryGameRepository`, `WinChecker`, `BasicComputerStrategy`) are wired to the abstractions everything else depends on. |
-| **Encapsulation** | Every domain entity (`Board`, `Game`, `Scoreboard`) exposes behaviour methods (`PlaceMark`, `ApplyMove`, `RecordResult`) instead of public setters — callers cannot put an entity into an invalid state by assigning a property directly. |
-| **Abstraction** | `IWinChecker.Evaluate(board)` and `IComputerPlayerStrategy.ChooseMove(...)` are the *only* things callers need to know; how a win is detected or a move is chosen is entirely hidden behind those two calls. |
-| **Polymorphism** | Any current or future `IComputerPlayerStrategy` (or `IWinChecker`) implementation is used identically by `GameService`/`Game` via the interface type — swapping `BasicComputerStrategy` for a hypothetical `MinimaxComputerStrategy` requires no caller changes. |
-| **Immutability** | `Move` is a C# `record` — a played move is never mutated, only replayed (see `Board.ReplayMoves`), which is what makes Undo simple and safe. |
-
 ## 10. Clarifications and Assumptions
 
 - **Storage**: in-memory, as explicitly permitted. All state — every game and
