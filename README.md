@@ -151,9 +151,101 @@ Covers `GameService`'s HTTP calls (via `HttpClientTestingModule`) and
 
 ## 8. AI Tools and Prompt Summary
 
-See **[PROMPTS.md](./PROMPTS.md)** for the full AI-assisted development
-write-up (what was asked, what the AI generated, what a candidate should
-personally verify/change before submitting, and why).
+# AI-Assisted Development Notes
+
+The assignment explicitly permits AI-assisted development and asks the
+candidate to be ready to explain: how the requirement became a spec, what
+prompts were used, what the AI generated, what was changed manually, what was
+reviewed carefully, what assumptions were made, and what trade-offs were
+chosen. This document is that write-up, kept honest about what actually
+happened in this session.
+
+## How the requirement became a specification
+
+The starting point was the assignment's own `Problem_Statement -
+Technical_Assignment.docx`, converted to plain text and read in full before
+any code was written. Nothing in the spec was reinterpreted loosely — the
+functional requirements, the "Must-Have" list, the suggested API scope, the
+undo-per-mode examples, and the testing checklist were all extracted directly
+from that document and used as the acceptance criteria for the code below.
+Two places in the spec explicitly ask the implementer to choose and document
+an approach rather than dictating one; those choices and the reasoning behind
+them are written up in the README (§9 "Design Decisions"), not hidden.
+
+## 8. AI Tools and Prompt Summary
+
+AI assistance was used during development to reason through some of the
+trickier design decisions in the game logic. A summary of the key prompts
+and the resulting reasoning:
+
+**"How should Tic Tac Toe win and draw conditions be handled? Explain every
+step, follow SOLID principles and OOP concepts."**
+
+A 3×3 board only has 8 possible ways to win: 3 rows, 3 columns, 2 diagonals.
+Rather than writing a separate check for each, they're stored as one array
+of index-triplets (e.g. `{0,1,2}` for the top row) and checked in a loop.
+After every move: evaluate the board against those 8 lines — if any line has
+the same non-empty mark in all three cells, the game is **Won** (store the
+winner and the winning cells so the UI can highlight them); if nobody won
+and every cell is filled, it's a **Draw**; otherwise the game stays
+**InProgress** and the turn passes to the other player. This logic lives
+behind an `IWinChecker` interface rather than being hard-coded inside
+`Game` — `Game` only knows it can call `Evaluate(board)`, not how the
+answer is produced (Dependency Inversion), which also means the win rule
+could be swapped later without touching `Game` at all (Open/Closed).
+`WinChecker` itself does exactly one job (Single Responsibility).
+
+**"What validations should be performed when a player submits a move?"**
+
+Four checks, run in order, before anything is mutated: (1) is the game
+already over — reject if `Won`/`Draw`; (2) is the cell index actually on the
+board (0–8); (3) is it this player's turn; (4) is the cell already occupied.
+Any failure throws immediately and the board is left completely untouched —
+there's no scenario where a rejected move partially changes state.
+
+**"How can undo behavior be handled differently for two-player and computer
+modes?"**
+
+Two Player Mode: Undo removes exactly the one most recent move. Vs Computer
+Mode is trickier, since the computer replies automatically in the same
+request right after the human moves — so Undo needs to remove the human
+move and the computer's reply together, as a pair, to land back on a
+position the human actually chose. The one edge case: if the human's move
+ends the game before the computer gets a turn, Undo removes only that single
+human move. This is implemented by checking which player made the *last*
+recorded move (not by assuming move counts are always even), which handles
+the edge case without any special-casing.
+
+**"What simple strategy can be used for the computer opponent?"**
+
+A rule-based priority list rather than a search algorithm: (1) win
+immediately if possible; (2) otherwise block the opponent's winning move;
+(3) otherwise take the center (part of 4 winning lines); (4) otherwise take
+a corner (part of 3 lines); (5) otherwise take any remaining cell. Steps 1
+and 2 reuse the same win-detection logic from the question above instead of
+duplicating "what counts as a line" — each empty cell is tried as a
+hypothetical move and evaluated, then discarded if it doesn't win.
+
+**"What core scenarios should be tested for the game?"**
+
+Valid moves update the board and switch the turn; invalid moves (wrong
+turn, occupied cell, out-of-range index, move after completion) are
+rejected and leave state unchanged; each of the 8 winning lines is
+detected; a full board with no winner is a draw; Reset clears the
+board/history but not the scoreboard; Undo behaves correctly in both modes
+(including the edge case above) and is rejected when there's nothing to
+undo or the game has finished; the scoreboard updates exactly once per
+completed game; the computer picks the correct cell at every priority rung.
+
+**"How can winning combinations be checked without writing separate logic
+for every row, column, and diagonal?"**
+
+Represent the board as a flat list of 9 cells (indices 0–8) instead of a 2D
+grid. The 8 winning lines become 8 sets of 3 indices — `{0,1,2} {3,4,5}
+{6,7,8}` (rows), `{0,3,6} {1,4,7} {2,5,8}` (columns), `{0,4,8} {2,4,6}`
+(diagonals) — stored as one array-of-arrays and checked with a single loop:
+for each line, if the first cell isn't empty and the other two match it,
+that's a win. One small piece of logic, reused 8 times.
 
 ## 9. Design Decisions
 

@@ -1,0 +1,29 @@
+<section class="mode-selector">
+  <div class="mode-selector__options" role="radiogroup" aria-label="Game mode">
+    <label class="mode-selector__option" [class.mode-selector__option--active]="selectedMode === 'TwoPlayer'">
+      <input
+        type="radio"
+        name="game-mode"
+        value="TwoPlayer"
+        [checked]="selectedMode === 'TwoPlayer'"
+        (change)="selectMode('TwoPlayer')"
+      />
+      Two Player
+    </label>
+
+    <label class="mode-selector__option" [class.mode-selector__option--active]="selectedMode === 'VsComputer'">
+      <input
+        type="radio"
+        name="game-mode"
+        value="VsComputer"
+        [checked]="selectedMode === 'VsComputer'"
+        (change)="selectMode('VsComputer')"
+      />
+      Play Against Computer
+    </label>
+  </div>
+
+  <button type="button" class="mode-selector__start" (click)="start()">
+    {{ hasActiveGame ? 'New Game' : 'Start Game' }}
+  </button>
+</section>

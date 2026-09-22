@@ -1,0 +1,31 @@
+<div class="app">
+  <header class="app__header">
+    <h1>Tic Tac Toe</h1>
+  </header>
+
+  <app-mode-selector
+    [selectedMode]="selectedMode"
+    [hasActiveGame]="!!gameState"
+    (modeChange)="onModeChange($event)"
+    (startGame)="onStartNewGame($event)"
+  ></app-mode-selector>
+
+  <p class="app__error" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+
+  <ng-container *ngIf="gameState as state; else noGame">
+    <app-game-board
+      [state]="state"
+      (cellClicked)="onCellClicked($event)"
+      (undo)="onUndo()"
+      (resetGame)="onResetGame()"
+    ></app-game-board>
+
+    <app-move-history [moves]="state.moveHistory"></app-move-history>
+  </ng-container>
+
+  <ng-template #noGame>
+    <p class="app__hint">Choose a mode above and click "Start Game" to begin.</p>
+  </ng-template>
+
+  <app-scoreboard [scoreboard]="scoreboard" (resetScoreboard)="onResetScoreboard()"></app-scoreboard>
+</div>

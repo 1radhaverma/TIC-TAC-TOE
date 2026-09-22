@@ -1,0 +1,24 @@
+<section class="move-history">
+  <h2 class="move-history__title">Move History</h2>
+
+  <table class="move-history__table" *ngIf="moves.length; else noMoves">
+    <thead>
+      <tr>
+        <th>Move</th>
+        <th>Player</th>
+        <th>Position</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let move of moves">
+        <td>{{ move.moveNumber }}</td>
+        <td>{{ move.player }}</td>
+        <td>Row {{ move.row }}, Column {{ move.column }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noMoves>
+    <p class="move-history__empty">No moves yet - make the first move on the board above.</p>
+  </ng-template>
+</section>

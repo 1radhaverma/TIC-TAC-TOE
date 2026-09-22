@@ -1,0 +1,20 @@
+<section class="scoreboard">
+  <h2 class="scoreboard__title">Scoreboard</h2>
+
+  <div class="scoreboard__row">
+    <div class="scoreboard__item">
+      <span class="scoreboard__label">X Wins</span>
+      <span class="scoreboard__value">{{ scoreboard.xWins }}</span>
+    </div>
+    <div class="scoreboard__item">
+      <span class="scoreboard__label">O Wins</span>
+      <span class="scoreboard__value">{{ scoreboard.oWins }}</span>
+    </div>
+    <div class="scoreboard__item">
+      <span class="scoreboard__label">Draws</span>
+      <span class="scoreboard__value">{{ scoreboard.draws }}</span>
+    </div>
+  </div>
+
+  <button type="button" class="scoreboard__reset" (click)="resetScoreboard.emit()">Reset Scoreboard</button>
+</section>
