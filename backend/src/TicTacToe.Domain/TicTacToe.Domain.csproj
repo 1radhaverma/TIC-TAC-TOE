@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TicTacToe.Domain</RootNamespace>
+    <!--
+      Deliberately no PackageReference entries here.
+      The domain layer models Tic Tac Toe itself - it should not need ASP.NET Core,
+      a database driver, or any other framework to compile. That independence is
+      what makes it trivial to unit test and safe to reuse (e.g. behind a console
+      app or a different API framework) without dragging in unrelated dependencies.
+    -->
+  </PropertyGroup>
+
+</Project>

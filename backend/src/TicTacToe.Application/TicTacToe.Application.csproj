@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TicTacToe.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The Application layer depends only on Domain, never on Api/Infrastructure -
+         it defines the ports (IGameRepository, IScoreboardRepository) that
+         Infrastructure implements, not the other way around. -->
+    <ProjectReference Include="..\TicTacToe.Domain\TicTacToe.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

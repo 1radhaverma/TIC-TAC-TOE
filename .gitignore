@@ -1,0 +1,23 @@
+## .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+.vs/
+*.suo
+
+## Angular / Node
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/out-tsc/
+npm-debug.log*
+
+## Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+## Test output
+**/TestResults/
+**/coverage/

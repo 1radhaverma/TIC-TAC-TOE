@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TicTacToe.Api</RootNamespace>
+    <UserSecretsId>tic-tac-toe-api-secrets</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Swagger/OpenAPI - satisfies "clearly document the API contract" by
+         generating an interactive, always-up-to-date contract from the
+         controllers themselves. Visit /swagger when running in Development. -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The Api project references BOTH Application and Domain. It needs
+         Domain directly only to register concrete domain types (WinChecker,
+         BasicComputerStrategy) against their interfaces in Program.cs, and to
+         implement IGameRepository/IScoreboardRepository, which return domain
+         entities. Api never contains business logic itself - it is the
+         outermost layer that plugs everything else together and exposes it
+         over HTTP. -->
+    <ProjectReference Include="..\TicTacToe.Application\TicTacToe.Application.csproj" />
+    <ProjectReference Include="..\TicTacToe.Domain\TicTacToe.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
